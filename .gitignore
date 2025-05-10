@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+# Evitar subir archivos de propiedades con credenciales
+application.properties
+application.yml
+.env
+
+# Archivos de logs
+*.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
