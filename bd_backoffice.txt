@@ -1,0 +1,85 @@
+-- Base de Datos y Tablas
+CREATE DATABASE IF NOT EXISTS backoffice;
+USE backoffice;
+
+-- Tabla Alumnos
+CREATE TABLE IF NOT EXISTS Alumnos (
+    id_alumno INT AUTO_INCREMENT PRIMARY KEY,
+    dni INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    telefono INT NOT NULL,
+    correo_electronico VARCHAR(100)
+);
+
+-- Tabla Cursos
+CREATE TABLE IF NOT EXISTS Cursos (
+    id_curso INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_curso VARCHAR(100) NOT NULL,
+    precio DECIMAL(10, 2)
+);
+
+-- Tabla Docente
+CREATE TABLE IF NOT EXISTS Docente (
+    id_docente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    especialidad VARCHAR(100),
+    correo_electronico VARCHAR(100)
+);
+
+-- Tabla Programacion
+CREATE TABLE IF NOT EXISTS Programacion (
+    id_programacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_curso INT NOT NULL,
+    id_docente INT NOT NULL,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    FOREIGN KEY (id_curso) REFERENCES Cursos(id_curso),
+    FOREIGN KEY (id_docente) REFERENCES Docente(id_docente)
+);
+
+-- Tabla Matricula
+CREATE TABLE IF NOT EXISTS Matricula (
+    id_matricula INT AUTO_INCREMENT PRIMARY KEY,
+    id_alumno INT NOT NULL,
+    id_programacion INT NOT NULL,
+    fecha_matricula DATE,
+    FOREIGN KEY (id_alumno) REFERENCES Alumnos(id_alumno),
+    FOREIGN KEY (id_programacion) REFERENCES Programacion(id_programacion)
+);
+
+-- Tabla Usuarios
+CREATE TABLE IF NOT EXISTS Usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'soporte') NOT NULL
+);
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_usuario
+BEFORE INSERT ON Usuarios
+FOR EACH ROW
+BEGIN
+    -- Cifra la contraseña utilizando SHA2 antes de insertarla en la tabla
+    SET NEW.password = SHA2(NEW.password, 256);
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_usuario
+BEFORE UPDATE ON Usuarios
+FOR EACH ROW
+BEGIN
+    -- Cifra la contraseña utilizando SHA2 antes de actualizarla en la tabla
+    SET NEW.password = SHA2(NEW.password, 256);
+END $$
+
+DELIMITER ;
